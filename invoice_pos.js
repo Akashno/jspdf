@@ -49,6 +49,13 @@ var tableData = [
     value: "600.00",
     hsn: "44434343",
   },
+  {
+    itemName: "Rock Salt Lumiere 400 ks s",
+    qty: "1.000",
+    rate: "60.000",
+    value: "600.00",
+    hsn: "44434343",
+  },
 ];
 
 //fake data end
@@ -127,11 +134,6 @@ for (var index = 0; index < tableData.length; index++) {
   splitTitle.length > 1 ? nextLine(splitTitle.length + 1.5) : nextLine(2.5);
 
   doc.setFontSize(normalFontSize);
-  // adding new page
-  if (currentY > pageHeight) {
-    doc.addPage();
-    currentY = 6;
-  }
 }
 seperator();
 nextLine(2);
@@ -170,4 +172,10 @@ function seperator(item) {
 function showCenter(item) {
   doc.text(xCenter, currentY, item, "center");
   nextLine(1);
+}
+function checkForNextPage() {
+  if (currentY > pageHeight - 20) {
+    doc.addPage();
+    currentY = 6;
+  }
 }
