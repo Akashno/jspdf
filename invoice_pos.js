@@ -8,6 +8,7 @@ var section1 = [
   "Phone : 9341933314",
   "Email: info@lumiere.co.in",
 ];
+
 var section2 = ["CIN: U55101KA2015PTC080591", "GSTIN: 29AACCL8648L1ZS"];
 var section3Header = ["Invoice", "Date", "Customer"];
 var section3Data = [
@@ -49,6 +50,7 @@ var tableData = [
     hsn: "44434343",
   },
 ];
+
 //fake data end
 
 var doc = new jsPDF("p", "mm", [pageWidth, pageHeight]);
@@ -56,11 +58,12 @@ var doc = new jsPDF("p", "mm", [pageWidth, pageHeight]);
 var normalFontSize = 7;
 var smallFontSize = 5;
 var lineHeight = Math.floor(normalFontSize / 2);
-var currentY = 2 * lineHeight;
-var maxCharPerLine = 40;
+
 var pageWidth = 80;
-var xCenter = Math.floor(pageWidth / 2);
 var pageHeight = 210;
+
+var currentY = 2 * lineHeight;
+var xCenter = Math.floor(pageWidth / 2);
 
 var start = 5;
 var end = 75;
@@ -131,10 +134,25 @@ for (var index = 0; index < tableData.length; index++) {
   }
 }
 seperator();
-nextLine(4);
-
-endSection.forEach(showCenter); //Thank you section
+nextLine(2);
+//
+doc.text("Round Off", end, currentY, "right");
+fontBold();
+nextLine(1.5);
+doc.text("Total", end, currentY, "right");
+nextLine(1.5);
+//
+doc.text("Paid by", start, currentY);
+nextLine(1.5);
+doc.text("Total Qty", start, currentY);
+nextLine(1.5);
+doc.text("Sales Staff", start, currentY);
+fontNormal();
+//
+nextLine(2);
 seperator();
+nextLine(4);
+endSection.forEach(showCenter); //Thank you section
 
 //utility functions
 function fontBold() {
