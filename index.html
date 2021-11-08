@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>hey</div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+  </body>
+
+
+  <script>
+    //fake data
+
+    var section1 = [
+      "Lumiere Organic Venturers Private Limited",
+      "No.152/142/1,Ground Floor Near Shoba Rosa Apartments",
+      "Bangalore Pin - 560066",
+      "Phone : 9341933314",
+      "Email: info@lumiere.co.in",
+    ];
+
+    var section2 = ["CIN: U55101KA2015PTC080591", "GSTIN:29AACCL8648L1ZS"];
+    var section3Header = ["Invoice", "Date", "Customer"];
+    var section3Data = [
+      "WF-INV-C2-03934",
+      "04 Nov 2021 12:15:24",
+      "Lakshmi[98347383267387]",
+    ];
+    var endSection = [
+      "Thank You for shopping with us",
+      "Exchange within 7 days. No Refund",
+    ];
+    var tableData = [
+      {
+        itemName: "Rock Salt Lumiere 100",
+        qty: "1.000",
+        rate: "60.000",
+        value: "600.00",
+        hsn: "23434343",
+        cgst: "23434343",
+        sgst: "23434343",
+      },
+      {
+        itemName: "Rock Salt Lumiere 400 ks skdfj sk jfksdfj skdfj ",
+        qty: "1.000",
+        rate: "60.000",
+        value: "600.00",
+        hsn: "44434343",
+      },
+    ];
+
+    //fake data end
+    //utility functions
+    const fontType = (type) => doc.setFont(undefined, type);
+    const fontSize = (size) => doc.setFontSize(size);
+    const nextLine = (numberOfLines) =>
+      (currentY += numberOfLines * lineHeight + 1);
+    const seperator = (item) => doc.line(start, currentY, end, currentY);
+    const showCenter = (item) => {
+      doc.text(item, xCenter, currentY, { align: "center" });
+      nextLine(1);
+    };
+    const checkForNextPage = () => {
+      if (currentY > pageHeight - 20) {
+        doc.addPage();
+        currentY = 10;
+      }
+    };
+    //
+    var pageWidth = 80;
+    var pageHeight = 210;
+
+    var start = 5;
+    var end = 75;
+
+    var normalFontSize = 7;
+    var mediumFontSize = 5;
+    var lineHeight = Math.floor(normalFontSize / 2);
+
+    var currentY = 2 * lineHeight;
+    var xCenter = Math.floor(pageWidth / 2);
+
+    var doc = new jspdf.jsPDF("p", "mm", [pageWidth, pageHeight]);
+
+    // design starts
+
+    fontSize(normalFontSize);
+    fontType("bold");
+
+    // logo
+
+    doc.addImage("meal.png", "png", 34, currentY, 15, 8);
+    nextLine(5);
+    // intro section
+    section1.forEach(showCenter);
+    nextLine(1);
+    section2.forEach(showCenter);
+    // CIN GSTIN section
+    nextLine(1);
+    doc.text("POS Invoice", xCenter, currentY, { align: "center" });
+    nextLine(1);
+    seperator();
+    nextLine(1);
+    // section 3 -  Invoice date customer
+    for (var index = 0; index < section3Header.length; index++) {
+      fontType("bold");
+      doc.text(start, currentY, section3Header[index]);
+      fontType("normal");
+      doc.text(start + 20, currentY, section3Data[index]);
+      nextLine(1.5);
+    }
+    seperator();
+    nextLine(1);
+    //Table headers
+    fontType("bold");
+    doc.text(start, currentY, "Item Name");
+    doc.text(start + 36, currentY, "Qty");
+    doc.text(start + 48, currentY, "Rate");
+    doc.text(start + 60, currentY, "Value");
+    fontType("normal");
+    nextLine(0.5);
+    seperator();
+    nextLine(1);
+    //Table values
+    for (var index = 0; index < tableData.length; index++) {
+      var itemName = tableData[index].itemName;
+      //fix for longer item name
+      var splitTitle = doc.splitTextToSize(itemName, 30);
+      if (splitTitle.length > 1) {
+        splitTitle.forEach(function (item, index) {
+          doc.text(start, currentY + index * 3, item);
+        });
+      } else {
+        doc.text(start, currentY, itemName);
+      }
+      doc.text(start + 36, currentY, tableData[index].qty);
+      doc.text(start + 48, currentY, tableData[index].rate);
+      doc.text(start + 60, currentY, tableData[index].value);
+      fontSize(mediumFontSize);
+      var hsn = `HSN: ${tableData[index].hsn} `;
+      if (tableData[index].cgst) {
+        var hsn =
+          hsn +
+          `| CGST : ${tableData[index].cgst} | SGST : ${tableData[index].sgst}  `;
+      }
+      doc.text(start, currentY + splitTitle.length * 3, hsn);
+      splitTitle.length > 1 ? nextLine(splitTitle.length + 1.5) : nextLine(2.5);
+
+      fontSize(normalFontSize);
+      checkForNextPage();
+    }
+    seperator();
+    nextLine(2);
+    //
+    doc.text("Includes CGST @ 2.5%      14.40", end, currentY, {
+      align: "right",
+    });
+    nextLine(1);
+    doc.text("SGST @ 2.5%      14.40", end, currentY, {
+      align: "right",
+    });
+    nextLine(1);
+
+    seperator();
+    nextLine(2);
+    checkForNextPage();
+    doc.text("Round Off      10.00", end, currentY, "right");
+    fontType("bold");
+    nextLine(1.5);
+    doc.text("Total      1000", end, currentY, "right");
+    nextLine(1.5);
+    //
+    checkForNextPage();
+    doc.text("Paid by", start, currentY);
+    fontType("normal");
+    doc.text(":1850 (Customer Credit)", start + 20, currentY);
+    nextLine(1.5);
+    fontType("bold");
+    doc.text("Total Qty", start, currentY);
+    fontType("normal");
+    doc.text(":12.750", start + 20, currentY);
+    nextLine(1.5);
+    fontType("bold");
+    doc.text("Sales Staff", start, currentY);
+    fontType("normal");
+    doc.text(":Joey Tribbiani", start + 20, currentY);
+
+    //
+    nextLine(2);
+    seperator();
+    checkForNextPage();
+    nextLine(4);
+    checkForNextPage();
+    endSection.forEach(showCenter); //Thank you section
+
+    //design ends
+
+    doc.save("test.pdf");
+  </script>
+</html>
